@@ -27,6 +27,12 @@ async function MenuUsuario() {
     <nav className="flex items-center gap-3 text-sm">
       {usuario ? (
         <>
+          <Link
+            href="/anuncios/novo"
+            className="rounded-md bg-emerald-700 px-3 py-1.5 font-medium text-white hover:bg-emerald-800"
+          >
+            Anunciar
+          </Link>
           <Link href="/perfil" className="text-zinc-700 hover:text-emerald-700">
             Olá, {usuario.nome.split(" ")[0]}
           </Link>

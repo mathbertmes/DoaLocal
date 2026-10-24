@@ -1,12 +1,12 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { connection } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { urlDaFoto } from "@/lib/fotos";
 import { rotuloCategoria } from "@/lib/mural";
+import { GaleriaFotos } from "./galeria-fotos";
 
 export const metadata: Metadata = { title: "Anúncio | DoaLocal" };
 
@@ -51,42 +51,13 @@ async function DetalhesAnuncio({ params }: Pick<PageProps<"/anuncios/[id]">, "pa
   // Sem tipos gerados do banco, o supabase-js tipa a junção como lista, mas
   // anuncios → perfis é muitos-para-um e retorna um único objeto.
   const doador = anuncio.perfis as unknown as { nome: string } | null;
-  const [principal, ...demais] = anuncio.fotos as string[];
   const publicadoEm = new Intl.DateTimeFormat("pt-BR", { dateStyle: "long" }).format(
     new Date(anuncio.publicado_em),
   );
 
   return (
     <article className="grid gap-6 md:grid-cols-2">
-      <div className="flex flex-col gap-2">
-        <div className="relative aspect-[4/3] overflow-hidden rounded-lg bg-zinc-100">
-          <Image
-            src={urlDaFoto(principal)}
-            alt={anuncio.titulo}
-            fill
-            sizes="(min-width: 768px) 480px, 100vw"
-            className="object-cover"
-            preload
-          />
-        </div>
-        {demais.length > 0 && (
-          <ul className="grid grid-cols-4 gap-2">
-            {demais.map((foto, i) => (
-              <li key={foto} className="relative aspect-square overflow-hidden rounded-md bg-zinc-100">
-                <a href={urlDaFoto(foto)} target="_blank" rel="noreferrer" title="Abrir foto em tamanho original">
-                  <Image
-                    src={urlDaFoto(foto)}
-                    alt={`${anuncio.titulo} — foto ${i + 2}`}
-                    fill
-                    sizes="120px"
-                    className="object-cover"
-                  />
-                </a>
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
+      <GaleriaFotos fotos={(anuncio.fotos as string[]).map(urlDaFoto)} titulo={anuncio.titulo} />
 
       <div className="flex flex-col gap-4">
         {SITUACAO[anuncio.status] && (
